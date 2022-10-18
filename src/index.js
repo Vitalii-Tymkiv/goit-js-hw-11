@@ -38,8 +38,8 @@ async function handleSubmit(event) {
   }
   pixabay.query = query;
   clearAll();
-
   try {
+    refs.loadMoreBtn.classList.add('is-hidden');
     spinerPlay();
     const data = await pixabay.getPhotos(query);
     const { hits, totalHits } = data;
@@ -49,7 +49,6 @@ async function handleSubmit(event) {
     }
     refs.gallery.insertAdjacentHTML('beforeend', markup);
     lightbox.refresh();
-
     pixabay.calculateTotalPages(totalHits);
 
     if (pixabay.isShowLoadMore) {
@@ -73,6 +72,7 @@ async function handleSubmit(event) {
 }
 
 async function clickOnLoadMore() {
+  refs.loadMoreBtn.classList.remove('is-hidden');
   pixabay.incrementPage();
   if (!pixabay.isShowLoadMore) {
     Notify.failure(
@@ -83,11 +83,13 @@ async function clickOnLoadMore() {
   }
   try {
     spinerPlay();
+
     const data = await pixabay.getPhotos();
     const { hits } = data;
     const markup = createImageMarkup(hits);
     refs.gallery.insertAdjacentHTML('beforeend', markup);
     lightbox.refresh();
+
     const { height: cardHeight } = document
       .querySelector('.gallery')
       .firstElementChild.getBoundingClientRect();

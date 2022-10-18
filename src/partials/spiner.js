@@ -24,12 +24,12 @@ const opts = {
 const spinner = new Spinner(opts).spin(refs.spiner);
 export function spinerPlay() {
   spinner.spin(refs.spiner);
+
   refs.loadspiner.classList.remove('is-hidden');
-  refs.loadMoreBtn.classList.add('is-hidden');
 }
 
 export function spinerStop() {
   refs.loadspiner.classList.add('is-hidden');
-  refs.loadMoreBtn.classList.remove('is-hidden');
+
   spinner.stop();
 }
