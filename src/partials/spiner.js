@@ -1,7 +1,7 @@
 import { Spinner } from 'spin.js';
 import { refs } from './refs';
 const opts = {
-  lines: 12, // The number of lines to draw
+  lines: 18, // The number of lines to draw
   length: 22, // The length of each line
   width: 11, // The line thickness
   radius: 27, // The radius of the inner circle
@@ -25,9 +25,11 @@ const spinner = new Spinner(opts).spin(refs.spiner);
 export function spinerPlay() {
   spinner.spin(refs.spiner);
   refs.loadspiner.classList.remove('is-hidden');
+  refs.loadMoreBtn.classList.add('is-hidden');
 }
 
 export function spinerStop() {
   refs.loadspiner.classList.add('is-hidden');
+  refs.loadMoreBtn.classList.remove('is-hidden');
   spinner.stop();
 }

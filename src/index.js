@@ -29,52 +29,47 @@ async function handleSubmit(event) {
   } = event.currentTarget;
 
   const query = searchQuery.value.trim().toLowerCase();
-  console.log(query);
-
   if (!query) {
     Notify.failure('Enter search data!!!', notifyOptions);
     return;
   }
   pixabay.query = query;
-
   clearAll();
 
   try {
     spinerPlay();
-    const data = await pixabay.getPhotos(query).then(({ hits, totalHits }) => {
-      const markup = createImageMarkup(hits);
-      if (hits.length > 0) {
-        Notify.success(`Hooray! We found ${totalHits} images`, notifyOptions);
-      }
-      refs.gallery.insertAdjacentHTML('beforeend', markup);
-      console.log(lightbox);
-      lightbox.refresh();
+    const data = await pixabay.getPhotos(query);
+    const { hits, totalHits } = data;
+    const markup = createImageMarkup(hits);
+    if (hits.length > 0) {
+      Notify.success(`Hooray! We found ${totalHits} images`, notifyOptions);
+    }
+    refs.gallery.insertAdjacentHTML('beforeend', markup);
+    lightbox.refresh();
 
-      pixabay.calculateTotalPages(totalHits);
+    pixabay.calculateTotalPages(totalHits);
 
-      if (pixabay.isShowLoadMore) {
-        refs.loadMoreBtn.classList.remove('is-hidden');
-      }
+    if (pixabay.isShowLoadMore) {
+      refs.loadMoreBtn.classList.remove('is-hidden');
+    }
 
-      if (hits.length === 0) {
-        Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.',
-          notifyOptions
-        );
-        refs.loadMoreBtn.classList.add('is-hidden');
-      }
-    });
+    if (hits.length === 0) {
+      Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.',
+        notifyOptions
+      );
+      refs.loadMoreBtn.classList.add('is-hidden');
+    }
   } catch (error) {
     Notify.failure('Something wrong!!!', notifyOptions);
     clearAll();
+    console.log(error);
   } finally {
     spinerStop();
   }
-
-  // event.currentTarget.reset();
 }
 
-function clickOnLoadMore() {
+async function clickOnLoadMore() {
   pixabay.incrementPage();
   if (!pixabay.isShowLoadMore) {
     Notify.failure(
@@ -83,29 +78,27 @@ function clickOnLoadMore() {
     );
     refs.loadMoreBtn.classList.add('is-hidden');
   }
-  spinerPlay();
-  pixabay
-    .getPhotos()
-    .then(({ hits }) => {
-      const markup = createImageMarkup(hits);
-      refs.gallery.insertAdjacentHTML('beforeend', markup);
-      lightbox.refresh();
-      const { height: cardHeight } = document
-        .querySelector('.gallery')
-        .firstElementChild.getBoundingClientRect();
+  try {
+    spinerPlay();
+    const data = await pixabay.getPhotos();
+    const { hits } = data;
+    const markup = createImageMarkup(hits);
+    refs.gallery.insertAdjacentHTML('beforeend', markup);
+    lightbox.refresh();
+    const { height: cardHeight } = document
+      .querySelector('.gallery')
+      .firstElementChild.getBoundingClientRect();
 
-      window.scrollBy({
-        top: cardHeight * 5,
-        behavior: 'smooth',
-      });
-    })
-    .catch(() => {
-      Notify.failure('Something wrong!!!', notifyOptions);
-      clearAll();
-    })
-    .finally(() => {
-      spinerStop();
+    window.scrollBy({
+      top: cardHeight * 5,
+      behavior: 'smooth',
     });
+  } catch (error) {
+    Notify.failure('Something wrong!!!', notifyOptions);
+    clearAll();
+  } finally {
+    spinerStop();
+  }
 }
 
 function clearAll() {
