@@ -12,7 +12,10 @@ import { createImageMarkup } from './partials/createImageMarkup';
 refs.form.addEventListener('submit', handleSubmit);
 refs.loadMoreBtn.addEventListener('click', clickOnLoadMore);
 
-const lightbox = new SimpleLightbox('.gallery a');
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionDelay: 250,
+  captionsData: 'alt',
+});
 
 const notifyOptions = {
   position: 'right-top',
